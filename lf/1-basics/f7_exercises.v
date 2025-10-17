@@ -258,8 +258,57 @@ Theorem lower_grade_lowers :
     grade_comparison (Grade F Minus) g = Lt ->
     grade_comparison (lower_grade g) g = Lt.
 Proof.
+    intros [l m] H.
+    rewrite <- H.
+    destruct l as []; destruct m as []; reflexivity.
 Qed.
 
+Theorem lower_grade_lowers2 :
+    forall (g : grade),
+    grade_comparison (Grade F Minus) g = Lt ->
+    grade_comparison (lower_grade g) g = Lt.
+Proof.
+  intros [l m] H.
+  destruct m.
+  - simpl. rewrite letter_comparison_Eq. reflexivity.
+  - simpl. rewrite letter_comparison_Eq. reflexivity.
+  - destruct l; rewrite <- H; reflexivity.
+Qed.
 
+Theorem lower_grade_lowers3 :
+    forall (g : grade),
+    grade_comparison (Grade F Minus) g = Lt ->
+    grade_comparison (lower_grade g) g = Lt.
+Proof.
+  intros [l m] H.
+  destruct m.
+  - simpl. rewrite letter_comparison_Eq. reflexivity.
+  - simpl. rewrite letter_comparison_Eq. reflexivity.
+  - destruct l.
+    -- reflexivity.
+    -- reflexivity.
+    -- reflexivity.
+    -- reflexivity.
+    -- rewrite <- H, lower_grade_F_Minus. reflexivity.
+Qed.
 
+(* ============ penal por *)
+
+Definition apply_late_policy (late_days : nat) (g : grade) : grade :=
+    if late_days < 9 then g
+    else if late_days < 17 then lower_grade g
+    else if late_days < 21 then lower_grade (lower_grade g)
+    else lower_grade (lower_grade (lower_grade g)).
+
+Theorem apply_late_policy_unfold :
+    forall (late_days : nat) (g : grade),
+    (apply_late_policy late_days g) = (
+        if late_days < 9 then g 
+        else if late_days < 17 then lower_grade g
+        else if late_days < 21 then lower_grade (lower_grade g)
+        else lower_grade (lower_grade (lower_grade g))
+    ).
+Proof.
+  intros. reflexivity.
+Qed.
 End LateDays.
