@@ -294,21 +294,99 @@ Qed.
 
 (* ============ penal por *)
 
+Fixpoint less_than (a b :nat) : bool :=
+    match a,b with
+        | _, O => false
+        | O, _ => true
+        | S a', S b' => less_than a' b'
+    end.
+Notation "x <?? y" := (less_than x y) (at level 70).
+
 Definition apply_late_policy (late_days : nat) (g : grade) : grade :=
-    if late_days < 9 then g
-    else if late_days < 17 then lower_grade g
-    else if late_days < 21 then lower_grade (lower_grade g)
+    if (late_days <?? 9) then g
+    else if late_days <?? 17 then lower_grade g
+    else if late_days <?? 21 then lower_grade (lower_grade g)
     else lower_grade (lower_grade (lower_grade g)).
 
 Theorem apply_late_policy_unfold :
     forall (late_days : nat) (g : grade),
     (apply_late_policy late_days g) = (
-        if late_days < 9 then g 
-        else if late_days < 17 then lower_grade g
-        else if late_days < 21 then lower_grade (lower_grade g)
+        if late_days <?? 9 then g 
+        else if late_days <?? 17 then lower_grade g
+        else if late_days <?? 21 then lower_grade (lower_grade g)
         else lower_grade (lower_grade (lower_grade g))
     ).
 Proof.
-  intros. reflexivity.
+    reflexivity.
 Qed.
+
+(* =========== EX18 ** no_penalty_for_mostly_on_time *)
+Theorem no_penalty_for_mostly_on_time :
+    forall (late_days : nat) (g : grade),
+    (late_days <?? 9 = true) ->
+    apply_late_policy late_days g = g.
+Proof.
+    intros late_days g H.
+    rewrite apply_late_policy_unfold.
+    rewrite H.
+    reflexivity.
+Qed.
+
+
+(* =========== EX19 ** graded_lowered_once *)
+Theorem grade_lowered_once :
+    forall (late_days : nat) (g : grade),
+    (late_days <?? 9 = false) ->
+    (late_days <?? 17 = true) ->
+    (apply_late_policy late_days g) = (lower_grade g).
+Proof.
+    intros a g H1 H2.
+    rewrite apply_late_policy_unfold.
+    rewrite H1, H2.
+    reflexivity.
+Qed.
+
 End LateDays.
+
+
+(* =========== EX20 *** binary *)
+Inductive bin : Type :=
+    | Z
+    | B0 (n : bin)
+    | B1 (n : bin).
+
+Fixpoint incr (m:bin) : bin :=
+    match m with
+        | Z => B1 Z
+        | B0 m' => B1 m'
+        | B1 m' => B0 (incr m')
+    end.
+
+Fixpoint bin_to_nat (m:bin) : nat :=
+    match m with
+        | Z => O
+        | B0 m' => (bin_to_nat m') + (bin_to_nat m')
+        | B1 m' => S(bin_to_nat m') + (bin_to_nat m')
+    end. 
+
+Definition m : bin := (B1 (B1 (B0 (B1 (B0 (B1 Z)))))).
+Compute bin_to_nat m.
+Compute bin_to_nat (incr m).
+Compute bin_to_nat (incr (incr m)).
+Compute bin_to_nat (incr (incr (incr m))).
+Compute bin_to_nat (incr (incr (incr (incr m)))).
+Compute bin_to_nat (incr (incr (incr (incr (incr m))))).
+
+Example test_bin_incr1 : (incr (B1 Z)) = B0 (B1 Z).
+Proof. reflexivity. Qed.
+Example test_bin_incr2 : (incr (B0 (B1 Z))) = B1 (B1 Z).
+Proof. reflexivity. Qed.
+Example test_bin_incr3 : (incr (B1 (B1 Z))) = B0 (B0 (B1 Z)).
+Proof. reflexivity. Qed.
+Example test_bin_incr4 : bin_to_nat (B0 (B1 Z)) = 2.
+Proof. reflexivity. Qed.
+Example test_bin_incr5 : bin_to_nat (incr (B1 Z)) = 1 + bin_to_nat (B1 Z).
+Proof. reflexivity. Qed.
+Example test_bin_incr6 : bin_to_nat (incr (incr (B1 Z))) = 2 + bin_to_nat (B1 Z).
+Proof. reflexivity. Qed.
+
