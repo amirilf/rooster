@@ -1,3 +1,3 @@
-From LF.p1_basics Require Import f1_days.
+Load "lf/p1_basics/f1_days.v".
 
 Compute next_working_day chas.
