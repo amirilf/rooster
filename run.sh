@@ -1,12 +1,15 @@
-if [ "$1" == "cl" ]; then
-    find . -type f \( -name "*.vo" -o -name "*.aux" -o -name "*.vos" -o -name "*.vok" -o -name "*.glob" \) -delete
-    exit 0
-fi
-
-FILE="$1"
-if [ -f "$FILE" ]; then
-    rocq compile "$FILE"
+if [ "$1" = "build" ]; then
+    find . -name "*.v" -exec rocq compile -Q . SF {} \;
+    
+elif [ "$1" = "clean" ]; then
+    find . -type f \( -name "*.vo" -o -name "*.vok" -o -name "*.vos" -o -name "*.glob" -o -name "*.aux" -o -name ".*.aux" \) -delete
+    
+elif [ "$1" = "file" ]; then
+    rocq compile -Q . SF "$2"
+    
 else
-    echo "file '$FILE' not found!"
-    exit 1
+    echo "Usage:"
+    echo "  ./run.sh build"
+    echo "  ./run.sh clean"
+    echo "  ./run.sh file <path.v>"
 fi
