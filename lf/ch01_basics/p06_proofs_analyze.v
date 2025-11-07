@@ -107,10 +107,12 @@ Proof.
 Qed.
 
 (* =========== EX9 ** decreasing *)
+(* termination issue
 Fixpoint my_valid_decreasing_func_but_idiot_coq (a b : nat) : nat :=
     match a,b with
         | _, O => a
-        | _, _ => my_valid_fun_but_idiot_coq (a+1) (b-1)
+        | _, _ => my_valid_decreasing_func_but_idiot_coq (a+1) (b-1)
     end.
 
-Compute my_valid_fun_but_idiot_coq 10 3.
+Compute my_valid_decreasing_func_but_idiot_coq 10 3.
+*)
