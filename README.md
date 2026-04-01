@@ -6,6 +6,7 @@
 - **QC** - QuickChick
 - **VC** - Verifiable C
 - **SLF** - Separation Logic Foundations
+- **SECF** - Security Foundations
 
 #### Usage
 
@@ -36,7 +37,7 @@ From SF Require Import {book}.ch{num}_{name}.p{num}_{name}.
 
 #### VSCode
 
-Run `./run.sh build` before using VSCoq! it requires compiled `.vo` files to resolve imports.<br>
+Run `./run.sh build` before using VsRocq! it requires compiled `.vo` files to resolve imports.<br>
 Without compiled files, you'll see errors like:
 
 ```
@@ -44,4 +45,4 @@ Cannot find a physical path bound to logical path
 lf.ch01_basics.p01_days with prefix SF.
 ```
 
-If you have compiled files but are still seeing those frustrating red errors, try changing the import line and then changing it back, or restart VSCoq.
+If you have compiled files but are still seeing those frustrating red errors, try changing the import line and then changing it back, or restart VsRocq.
