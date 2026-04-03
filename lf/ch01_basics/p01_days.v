@@ -1,3 +1,5 @@
+(* Basics #lab23 to #lab24 *)
+
 Inductive day : Type :=
   | shan
   | yesh
@@ -24,4 +26,4 @@ Compute next_working_day (next_working_day yesh).
 
 Example test1:
   (next_working_day (next_working_day dosh)) = chas.
-Proof. simpl. reflexivity. Qed.
+Proof. reflexivity.  Qed.

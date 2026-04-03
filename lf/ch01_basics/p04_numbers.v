@@ -1,3 +1,5 @@
+(* Basics #lab32 to #lab34 *)
+
 Module MyModule.
     Inductive nat' : Type :=
         | O
@@ -57,17 +59,11 @@ Fixpoint devidable_by_3 (n : nat) : bool :=
         | S (S (S n')) => devidable_by_3 n'
     end.
 
-Definition n0  : nat := 0.
-Definition n1  : nat := 1.
-Definition n2  : nat := 2.
-Definition n3  : nat := 3.
-Definition n4  : nat := 4.
-
-Compute devidable_by_3 n0.
-Compute devidable_by_3 n1.
-Compute devidable_by_3 n2.
-Compute devidable_by_3 n3.
-Compute devidable_by_3 n4.
+Compute devidable_by_3 0.
+Compute devidable_by_3 1.
+Compute devidable_by_3 2.
+Compute devidable_by_3 3.
+Compute devidable_by_3 4.
 Compute devidable_by_3 (S (S (S (S (S O))))). (* 5 *)
 Compute devidable_by_3 (S (S (S (S (S(S O)))))). (* 6 *)
 
@@ -84,10 +80,13 @@ Definition odd_direct (n:nat) : bool :=
   negb (even_recursive n).
 
 Example test_even_recursive1: even_recursive 1 = false.
-Proof. simpl. reflexivity. Qed.
+Proof. reflexivity. Qed.
 
 Example test_even_recursive2: even_recursive 4 = true.
-Proof. simpl. reflexivity. Qed.
+Proof. reflexivity. Qed.
+
+Example test_odd_direct: odd_direct 4 = false.
+Proof. reflexivity. Qed.
 
 (* ============= multi param funcs *)
 
@@ -113,27 +112,22 @@ Fixpoint sub (a b : nat) : nat :=
             end
     end.
 
-Compute sub 6 6.
-Compute sub 6 7.
-Compute sub 6 8.
-Compute sub 7 6.
-Compute sub 31 3.
-Compute sub 17 0.
-
-
-Fixpoint sub_better (a b : nat) : nat :=
-    match a, b with
+Fixpoint sub' (a b : nat) :=
+    match a,b with
         | O, _ => O
         | _, O => a
-        | S n', S m' => sub_better n' m'
+        | S a', S b' => sub' a' b'
     end.
 
-Compute sub_better 6 6.
-Compute sub_better 6 7.
-Compute sub_better 6 8.
-Compute sub_better 7 6.
-Compute sub_better 31 3.
-Compute sub_better 17 0.
+Compute sub 6 6.
+Compute sub 6 7.
+Compute sub 17 0.
+Compute sub 32 13.
+
+Compute sub' 6 6.
+Compute sub' 6 7.
+Compute sub' 17 0.
+Compute sub' 32 13.
 
 Fixpoint mul (a b : nat) : nat :=
     match b with
@@ -157,7 +151,7 @@ Compute expo 2 3.
 Compute expo 3 4.
 Compute expo 10 4.
 
-(* =========== EX3 * factorial *)
+(* =========== exercise: 1 star, standard (factorial) *)
 
 Fixpoint factorial (n:nat) : nat :=
     match n with
@@ -176,11 +170,13 @@ Proof. simpl. reflexivity. Qed.
 (* ============ notations for em *)
 
 Notation "x + y" := (add x y) (at level 50, left associativity).
-Notation "x - y" := (sub_better x y) (at level 50, left associativity).
+Notation "x - y" := (sub' x y) (at level 50, left associativity).
 Notation "x * y" := (mul x y) (at level 40, left associativity).
+Notation "x @ y" := (expo x y) (at level 1, left associativity).
 
 Check ((0 + 1) + 1) : nat.
 Compute 10 + 23 * 2.
+Compute 10 + 2 @ 4 * 2. (* 10+((2^4)*2) *)
 
 (* =========== equality *)
 
@@ -199,6 +195,7 @@ Compute (0 = 1).
 Compute (2 = 0).
 Compute (10 = 11).
 Compute (22 = 22).
+Compute 3 @ 2 * 2 = 18.
 
 (* ========= a <= b *)
 
@@ -221,7 +218,7 @@ Compute 1 >=? 10.
 Compute 10 >=? 1.
 Compute 1 >=? 1.
 
-(* =========== EX4 * less than *)
+(* =========== exercise: 1 star, standard (ltb) *)
 
 Definition less_than (a b : nat) : bool :=
     negb (more_or_equal a b).
@@ -233,11 +230,10 @@ Compute 2 <? 1.
 Compute 1 <? 1.
 
 Example test_ltb1: (less_than 2 2) = false.
-Proof. simpl. reflexivity. Qed.
+Proof. reflexivity. Qed.
 
 Example test_ltb2: (less_than 2 4) = true.
-Proof. simpl. reflexivity. Qed.
+Proof. reflexivity. Qed.
 
 Example test_ltb3: (less_than 4 2) = false.
-Proof. simpl. reflexivity. Qed.
-
+Proof. reflexivity. Qed.
