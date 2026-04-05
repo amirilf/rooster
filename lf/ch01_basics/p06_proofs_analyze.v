@@ -1,3 +1,5 @@
+(* Basics #lab39 to #lab44 *)
+
 Fixpoint sub (a b : nat) : nat :=
     match a, b with
         | O, _ => O
@@ -13,13 +15,24 @@ Definition equal (a b : nat) : bool :=
 
 Notation "x == y" := (equal x y) (at level 70).
 
+(* 
+    Fixpoint eqb (n m : nat) : bool :=
+    match n, m with
+    | 0, 0       => true
+    | 0, S _     => false
+    | S _, 0     => false
+    | S n1, S m1 => eqb n1 m1
+    end.
+
+    in second subgoal, it matches the third one and result is false
+*)
 Theorem plus_1_neq_0_firsttry : forall n : nat,
-  (n + 1) == 0 = false.
+  ((n + 1) == 0) = false.
 Proof.
     intros n.
-    destruct n as [|n'] eqn:myEquation.
-        - reflexivity.
-        - reflexivity.
+    destruct n as [|myN] eqn:myEquation.
+        - simpl. reflexivity.
+        - simpl. reflexivity.
 Qed.
 
 Theorem negb_involutive : forall b : bool,
@@ -49,7 +62,7 @@ Proof.
         }
 Qed.
 
-
+(* nested example which is not common *)
 Theorem andb3_exchange : forall b c d : bool, andb (andb b c) d = andb (andb b d) c.
 Proof.
   intros b c d. destruct b eqn:Eb.
@@ -66,12 +79,20 @@ Proof.
       - reflexivity. }
     { destruct d eqn:Ed.
       - reflexivity.
-      - reflexivity. }
+      - reflexivity. } 
+      (* with using {} we can use same bullet symbol otherwise we get => [Focus] Wrong bullet -: Current bullet - is not finished. *)
 Qed.
 
-(* =========== EX7 ** andb_true_elim2 *)
-Theorem andb_true_elim2 : forall b c : bool,
-  andb b c = true -> c = true.
+Theorem andb3_exchange_better : forall b c d : bool, andb (andb b c) d = andb (andb b d) c.
+Proof.
+    intros b c d.
+    destruct b, c, d;
+    (* simpl. => just for checking them but it must have ; not . *) 
+    reflexivity.
+Qed.
+
+(* =========== exercise: 2 stars, standard (andb_true_elim2) *)
+Theorem andb_true_elim2 : forall b c : bool, andb b c = true -> c = true.
 Proof.
     intros b c H.
     destruct b eqn:Eb.
@@ -83,36 +104,47 @@ Proof.
             + rewrite <- H. reflexivity.
 Qed.
 
+Theorem andb_true_elim2' : forall b c : bool, andb b c = true -> c = true.
+Proof.
+    intros b c H.
+    destruct b, c.
+        - reflexivity.
+        - rewrite <- H. reflexivity.
+        - reflexivity.
+        - rewrite <- H. reflexivity.
+Qed.
 
 (* 
-    a cleaner version of (intros + destruct) 
-    note that we lose eqn:E in this style
+    a cleaner version of (intros + destruct) and that's because bool has a simple constructor 
 *)
 Theorem andb_commutative' : forall b c, andb b c = andb c b.
 Proof.
-    intros [] [].
-        - reflexivity.  (* ff *)
-        - reflexivity.  (* ft *)
-        - reflexivity.  (* tf *)
-        - reflexivity.  (* tt *)
+    intros [] [];
+    reflexivity.
 Qed.
 
-(* =========== EX8 * zero_nbeq_plus_1 *)
-Theorem zero_nbeq_plus_1 : forall n : nat,
-  0 == (n + 1) = false.
-Proof.
-    intros [|n'].
-        - reflexivity.
-        - reflexivity.
-Qed.
-
-(* =========== EX9 ** decreasing *)
-(* termination issue
-Fixpoint my_valid_decreasing_func_but_idiot_coq (a b : nat) : nat :=
-    match a,b with
-        | _, O => a
-        | _, _ => my_valid_decreasing_func_but_idiot_coq (a+1) (b-1)
-    end.
-
-Compute my_valid_decreasing_func_but_idiot_coq 10 3.
+(* =========== exercise: 1 star, standard (zero_nbeq_plus_1) *)
+(*
+    we write 1%nat to explicitly indicate that the literal 1
+    should be interpreted in nat_scope and also the annotation n%bool is
+    ignored because n is already declared as nat, thanks rocq
 *)
+Theorem zero_nbeq_plus_1 : forall n : nat, (0 == (n%bool + 1%nat)) = false.
+Proof.
+    intros [ | n' ];
+    reflexivity.
+Qed.
+
+(* =========== exercise: 2 stars, standard, optional (decreasing) *)
+(* Fixpoint bad_dec1 (n : nat) : nat :=
+match n with
+    | 0 => 0
+    | 1 => 0
+    | S (S n') => bad_dec1 (n' + 1)
+end. *)
+
+(* Fixpoint bad_dec2 (n : nat) : nat :=
+match n with
+    | O => 0
+    | S n' => bad_dec2 (n' + 1)
+end. *)

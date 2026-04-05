@@ -1,3 +1,5 @@
+(* Basics #lab35 to #lab38 *)
+
 Example plus_1_1 : 1 + 1 = 2.
 Proof. simpl. reflexivity. Qed.
 
@@ -9,6 +11,16 @@ Proof. reflexivity. Qed.
 Theorem plus_0_n' : forall n : nat, 0 + n = n.
 Proof. intros m. reflexivity. Qed.
 
+(*
+  note that 0 + n = n is easy to prove but n + 0 = n is not like that
+  since `add` is defined by recursion on first arg which is n:
+      match n with
+      | 0 => m
+      | S n' => S (add n' m)
+  then when the left side is 0, it immediately returns the right side.
+  but when the right side is 0, we need to use induction on the left arg.
+*)
+
 (* adding simpl will help to know how it is simplified *)
 Theorem plus_1_l : forall n : nat, 1 + n = S n.
 Proof. intros n. simpl. reflexivity. Qed.
@@ -17,15 +29,14 @@ Proof. intros n. simpl. reflexivity. Qed.
 Theorem mult_0_l : forall n : nat, 0 * n = 0.
 Proof. intros n. simpl. reflexivity. Qed.
 
-
 (* both -> and <- work here *)
-Theorem plust_will_not_change_equality : forall n m : nat, n = m -> n + n = m + m.
-Proof. intros n m J. rewrite <- J. reflexivity. Qed.
+Theorem plus_will_not_change_equality : forall n m : nat, n = m -> n + n = m + m.
+Proof. intros a b c. rewrite <- c. reflexivity. Qed.
 
-(* =========== EX5 * plus_id *)
+(* =========== exercise: 1 star, standard (plus_id_exercise) *)
 Theorem plus_id_exercise : forall n m o : nat,
-  n = m ->
-  m = o -> 
+    n = m ->
+    m = o -> 
     n + m = m + o.
 Proof.
     intros n m o H1 H2.
@@ -41,10 +52,10 @@ Theorem mult_n_0_m_0 : forall p q : nat,
   (p * 0) + (q * 0) = 0.
 Proof.
     intros p q.
-    rewrite <- mult_n_O.
-    rewrite <- mult_n_O.
+    rewrite <- mult_n_O, <- mult_n_O.
     reflexivity.
 Qed.
+(* we can also use !mult_n_0 which means do it for all occurrences *)
 
 (* using replace *)
 Theorem mult_n_0_m_0' : forall p q : nat,
@@ -67,18 +78,18 @@ Theorem mult_n_0_m_0'' : forall p q : nat,
 Proof.
     intros p q.
     pattern (q * 0) at 3.
-    replace (q * 0) with 0 by apply mult_n_O.
-    replace (q * 0) with 0 by apply mult_n_O.
+    replace (q * 0) with 0 by apply mult_n_O. (* the third one *)
+    replace (q * 0) with 0 by apply mult_n_O. (* other ones *)
     replace (p * 0) with 0 by apply mult_n_O.
     reflexivity.
 Qed.
 
-(* =========== EX6 * mult_n_1 *)
+(* =========== exercise: 1 star, standard (mult_n_1) *)
 Theorem mult_n_1 : forall p : nat, 
     p * 1 = p.
 Proof.
     intros p.
-    rewrite <- mult_n_Sm.
+    rewrite <- mult_n_Sm. (* n * m + n = n * 1 + m  => here m = 0 *)
     rewrite <- mult_n_O.
     reflexivity.
 Qed.

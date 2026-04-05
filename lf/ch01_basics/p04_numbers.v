@@ -229,11 +229,11 @@ Compute 1 <? 2.
 Compute 2 <? 1.
 Compute 1 <? 1.
 
-Example test_ltb1: (less_than 2 2) = false.
+Example test_ltb1: (2 <? 2) = false.
 Proof. reflexivity. Qed.
 
-Example test_ltb2: (less_than 2 4) = true.
+Example test_ltb2: (2 <? 4) = true.
 Proof. reflexivity. Qed.
 
-Example test_ltb3: (less_than 4 2) = false.
+Example test_ltb3: (4 <? 2) = false.
 Proof. reflexivity. Qed.
