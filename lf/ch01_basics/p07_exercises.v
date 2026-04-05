@@ -1,68 +1,57 @@
-(* =========== EX10 * identity_fn_applied_twice *)
+(* Basics #lab45 to #lab59 *)
+
+(* =========== exercise: 1 star, standard (identity_fn_applied_twice) *)
 Theorem identity_fn_applied_twice :
-    forall (f : bool -> bool), (forall (x : bool), f x = x) 
-    -> forall (b : bool), f (f b) = b.
+    forall (f : bool -> bool), (forall (x : bool), f x = x) -> forall (b : bool), f (f b) = b.
 Proof.
     intros f H x.
-    rewrite H.
-    rewrite H.
+    rewrite H, H. (* or !H *)
     reflexivity.
 Qed.
 
-
-(* =========== EX11 * negation_fn_applied_twice *)
+(* =========== exercise: 1 star, standard (negation_fn_applied_twice) *)
 Theorem neg_of_neg : forall b : bool, negb (negb b) = b.
 Proof.
-    intros [].
-    - reflexivity.
-    - reflexivity.
+    intros [];
+    reflexivity.
 Qed.
 
-(* could also be proved directly *)
 Theorem negation_fn_applied_twice :
     forall (f : bool -> bool), (forall (x : bool), f x = negb x) 
     -> forall (b : bool), f (f b) = b.
 Proof.
     intros f H x.
-    rewrite H.
-    rewrite H.
-    rewrite neg_of_neg.
+    rewrite !H, neg_of_neg.
     reflexivity.
 Qed.
 
-
-(* =========== EX12 * andb_eq_orb *)
-
-Theorem a_is_orb_when_true : forall a b : bool, a = true -> orb a b = true.
+(* some random things *)
+Theorem a_is_orb_when_true : 
+    forall a b : bool, a = true -> orb a b = true.
 Proof.
-    intros [] [] H.
-    - reflexivity.
-    - reflexivity.
-    - reflexivity.
-    - rewrite H. reflexivity. 
+    intros a b H.
+    rewrite H.
+    reflexivity.
 Qed.
 
 Theorem a_is_andb_when_false : forall a b : bool, a = false -> andb a b = false.
 Proof.
-    intros [] [] H.
-    - rewrite H. reflexivity.
-    - reflexivity.
-    - reflexivity.
-    - reflexivity. 
+    intros a b H.
+    rewrite H.
+    reflexivity.
 Qed.
 
 Theorem a_is_andb_with_true : forall a : bool, andb true a = a.
 Proof.
-    intros a.
     reflexivity.
 Qed.
 
 Theorem a_is_orb_with_false : forall a : bool, orb false a = a.
 Proof.
-    intros a.
     reflexivity.
 Qed.
 
+(* =========== exercise: 3 stars, standard, optional (andb_eq_orb) *)
 Theorem andb_eq_orb1 : forall (b c : bool), (andb b c = orb b c) -> b = c.
 Proof.
     intros [] [].
@@ -75,19 +64,25 @@ Qed.
 Theorem andb_eq_orb2 : forall (b c : bool), (andb b c = orb b c) -> b = c.
 Proof.
     intros a b H.
-    destruct a as [] eqn:Ea.
-        - simpl in *. rewrite <- H. reflexivity.
-        - simpl in *. rewrite <- H. reflexivity.
+    destruct a as [] eqn:Ea;
+    simpl in H; rewrite H; 
+    reflexivity.
 Qed.
 
 Theorem andb_eq_orb3 : forall (b c : bool), (andb b c = orb b c) -> b = c.
 Proof.
     intros a b.
-    destruct a.
-        - simpl. intros H. rewrite -> H. reflexivity.
-        - simpl. intros H. rewrite -> H. reflexivity.
+    destruct a;
+    simpl; 
+    intros H; 
+    rewrite H; 
+    reflexivity.
 Qed.
 
+Theorem andb_eq_orb4 : forall (b c : bool), (andb b c = orb b c) -> b = c.
+Proof.
+    intros [] [] H; reflexivity || discriminate.
+Qed.
 
 (* ============ course late policies *)
 
@@ -134,7 +129,7 @@ Compute letter_comparison D D.
 Compute letter_comparison B F.
 
 
-(* =========== EX13 * letter_comparison_Eq *)
+(* =========== exercise: 1 star, standard (letter_comparison) *)
 Theorem letter_comparison_Eq : forall l, letter_comparison l l = Eq.
 Proof.
     intros [];
@@ -152,24 +147,24 @@ Definition modifier_comparison (m1 m2 : modifier) : comparison :=
         | Minus, Minus => Eq
     end.
 
-
-(* =========== EX14 ** grade_comparison *)
+(* =========== exercise: 2 stars, standard (grade_comparison) *)
 Definition grade_comparison (g1 g2 : grade) : comparison :=
     match g1, g2 with Grade l1 m1, Grade l2 m2 =>
         match letter_comparison l1 l2 with
             | Eq => modifier_comparison m1 m2
-            | any => any
+            | anyother => anyother
         end
     end.
 
 Example test_grade_comparison1 : (grade_comparison (Grade A Minus) (Grade B Plus)) = Gt.
 Proof. simpl. reflexivity. Qed.
 Example test_grade_comparison2 : (grade_comparison (Grade A Minus) (Grade A Plus)) = Lt.
-Proof. simpl. reflexivity. Qed.
+Proof. reflexivity. Qed.
 Example test_grade_comparison3 : (grade_comparison (Grade F Plus) (Grade F Plus)) = Eq.
-Proof. simpl. reflexivity. Qed.
+Proof. reflexivity. Qed.
 Example test_grade_comparison4 : (grade_comparison (Grade B Minus) (Grade C Plus)) = Gt.
-Proof. simpl. reflexivity. Qed.
+Proof. reflexivity. Qed.
+
 
 Definition lower_letter (l : letter) : letter :=
     match l with
@@ -179,7 +174,6 @@ Definition lower_letter (l : letter) : letter :=
         | D => F
         | F => F
     end.
-
 
 Theorem lower_letter_lowers: forall (l : letter),
     letter_comparison (lower_letter l) l = Lt.
@@ -193,35 +187,37 @@ Proof.
   - simpl. (* I'm stuck son *)
 Abort.
 
-
-Theorem lower_letter_F_is_F:
-  lower_letter F = F.
+Theorem lower_letter_F_is_F: lower_letter F = F.
 Proof.
   simpl. reflexivity.
 Qed.
 
-(* =========== EX15 ** lower_letter_lowers *)
-
+(* =========== exercise: 2 stars, standard (lower_letter_lowers) *)
 Theorem lower_letter_lowers: 
-    forall (l : letter),
-    letter_comparison F l = Lt ->
-    letter_comparison (lower_letter l) l = Lt.
+    forall (l : letter), 
+        letter_comparison F l = Lt -> 
+        letter_comparison (lower_letter l) l = Lt.
 Proof.
-    intros l H.
-    destruct l as [] eqn:E.
-    - reflexivity.
-    - reflexivity.
-    - reflexivity.
-    - reflexivity.
-    - discriminate.
-    (* - rewrite <- H. simpl. reflexivity. *)
-    (* - simpl. apply H. *)
+    intros l H;
+    destruct l;
+    rewrite <- H;
+    reflexivity.
 Qed.
 
+Theorem lower_letter_lowers2:
+    forall (l : letter),
+        letter_comparison F l = Lt ->
+        letter_comparison (lower_letter l) l = Lt.
+Proof.
+    intros l H.
+    destruct l;
+    simpl;
+    reflexivity || discriminate H.
+Qed.
 
-(* =========== EX16 ** lower_grade *)
+(* =========== exercise: 2 stars, standard (lower_grade) *)
 Definition lower_grade (g : grade) : grade :=
-    match g with | Grade l m =>
+    match g with Grade l m =>
         match m with
             | Plus => Grade l Natural
             | Natural => Grade l Minus
@@ -251,9 +247,27 @@ Proof. reflexivity. Qed.
 Theorem lower_grade_F_Minus : lower_grade (Grade F Minus) = (Grade F Minus).
 Proof. reflexivity. Qed.
 
+(* =========== exercise: 3 stars, standard (lower_grade_lowers) *)
+Theorem lower_grade_lowers1 :
+    forall (g : grade),
+        grade_comparison (Grade F Minus) g = Lt ->
+        grade_comparison (lower_grade g) g = Lt.
+Proof.
+    intros [[] []] H;
+    reflexivity || discriminate H.
+Qed.
 
-(* =========== EX17 ** lower_grade_lowers *)
-Theorem lower_grade_lowers :
+Theorem lower_grade_lowers2 :
+    forall (g : grade),
+        grade_comparison (Grade F Minus) g = Lt ->
+        grade_comparison (lower_grade g) g = Lt.
+Proof.
+    intros [[] []] H;
+    rewrite <- H;
+    reflexivity.
+Qed.
+
+Theorem lower_grade_lowers3 :
     forall (g : grade),
     grade_comparison (Grade F Minus) g = Lt ->
     grade_comparison (lower_grade g) g = Lt.
@@ -263,10 +277,10 @@ Proof.
     destruct l as []; destruct m as []; reflexivity.
 Qed.
 
-Theorem lower_grade_lowers2 :
+Theorem lower_grade_lowers4 :
     forall (g : grade),
-    grade_comparison (Grade F Minus) g = Lt ->
-    grade_comparison (lower_grade g) g = Lt.
+        grade_comparison (Grade F Minus) g = Lt ->
+        grade_comparison (lower_grade g) g = Lt.
 Proof.
   intros [l m] H.
   destruct m.
@@ -275,7 +289,7 @@ Proof.
   - destruct l; rewrite <- H; reflexivity.
 Qed.
 
-Theorem lower_grade_lowers3 :
+Theorem lower_grade_lowers5 :
     forall (g : grade),
     grade_comparison (Grade F Minus) g = Lt ->
     grade_comparison (lower_grade g) g = Lt.
@@ -292,64 +306,61 @@ Proof.
     -- rewrite <- H, lower_grade_F_Minus. reflexivity.
 Qed.
 
-(* ============ penal por *)
-
+(* penalty *)
 Fixpoint less_than (a b :nat) : bool :=
     match a,b with
         | _, O => false
         | O, _ => true
         | S a', S b' => less_than a' b'
     end.
-Notation "x <?? y" := (less_than x y) (at level 70).
+Notation "x < y" := (less_than x y) (at level 70).
 
 Definition apply_late_policy (late_days : nat) (g : grade) : grade :=
-    if (late_days <?? 9) then g
-    else if late_days <?? 17 then lower_grade g
-    else if late_days <?? 21 then lower_grade (lower_grade g)
+    if (late_days < 9) then g
+    else if late_days < 17 then lower_grade g
+    else if late_days < 21 then lower_grade (lower_grade g)
     else lower_grade (lower_grade (lower_grade g)).
 
+(* helps to prove using rewrite *)
 Theorem apply_late_policy_unfold :
     forall (late_days : nat) (g : grade),
     (apply_late_policy late_days g) = (
-        if late_days <?? 9 then g 
-        else if late_days <?? 17 then lower_grade g
-        else if late_days <?? 21 then lower_grade (lower_grade g)
+        if late_days < 9 then g 
+        else if late_days < 17 then lower_grade g
+        else if late_days < 21 then lower_grade (lower_grade g)
         else lower_grade (lower_grade (lower_grade g))
     ).
 Proof.
     reflexivity.
 Qed.
 
-(* =========== EX18 ** no_penalty_for_mostly_on_time *)
+(* =========== exercise: 2 stars, standard (no_penalty_for_mostly_on_time) *)
 Theorem no_penalty_for_mostly_on_time :
     forall (late_days : nat) (g : grade),
-    (late_days <?? 9 = true) ->
-    apply_late_policy late_days g = g.
+        (late_days < 9 = true) ->
+        apply_late_policy late_days g = g.
 Proof.
-    intros late_days g H.
-    rewrite apply_late_policy_unfold.
-    rewrite H.
+    intros l g H.
+    rewrite apply_late_policy_unfold, H.
     reflexivity.
 Qed.
 
-
-(* =========== EX19 ** graded_lowered_once *)
+(* =========== exercise: 2 stars, standard (graded_lowered_once) *)
 Theorem grade_lowered_once :
     forall (late_days : nat) (g : grade),
-    (late_days <?? 9 = false) ->
-    (late_days <?? 17 = true) ->
-    (apply_late_policy late_days g) = (lower_grade g).
+        (late_days < 9 = false) ->
+        (late_days < 17 = true) ->
+        (apply_late_policy late_days g) = (lower_grade g).
 Proof.
     intros a g H1 H2.
-    rewrite apply_late_policy_unfold.
-    rewrite H1, H2.
+    rewrite apply_late_policy_unfold, H1, H2.
     reflexivity.
 Qed.
 
 End LateDays.
 
 
-(* =========== EX20 *** binary *)
+(* =========== exercise: 3 stars, standard (binary) *)
 Inductive bin : Type :=
     | Z
     | B0 (n : bin)
@@ -389,4 +400,3 @@ Example test_bin_incr5 : bin_to_nat (incr (B1 Z)) = 1 + bin_to_nat (B1 Z).
 Proof. reflexivity. Qed.
 Example test_bin_incr6 : bin_to_nat (incr (incr (B1 Z))) = 2 + bin_to_nat (B1 Z).
 Proof. reflexivity. Qed.
-
